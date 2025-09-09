@@ -1,21 +1,9 @@
 package com.haexporter;
 
-import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.Tile;
-import net.runelite.api.Scene;
-import net.runelite.api.coords.WorldPoint;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
+
 import com.google.inject.Provides;
-import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -23,15 +11,11 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.eventbus.Subscribe;
 import javax.inject.Inject;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -122,14 +106,19 @@ public class HAExporter extends Plugin {
 		jsonData.put("equipment", new HashMap<>(currentEquipment));
 
 		// Spellbook
-		int spellbookVar = client.getVar(VarPlayer.SPELLBOOK);
-		String spellbookName = switch (spellbookVar) {
-			case 0 -> "standard";
-			case 1 -> "ancient";
-			case 2 -> "lunar";
-			case 3 -> "arceuus";
-			default -> "unknown";
-		};
+		int spellbookVar = client.getVar(Varbits.SPELLBOOK);
+		String spellbookName;
+		if (spellbookVar == 0) {
+			spellbookName = "standard";
+		} else if (spellbookVar == 1) {
+			spellbookName = "ancient";
+		} else if (spellbookVar == 2) {
+			spellbookName = "lunar";
+		} else if (spellbookVar == 3) {
+			spellbookName = "arceuus";
+		} else {
+			spellbookName = "unknown";
+		}
 		jsonData.put("spellbook", spellbookName);
 
 		// Active prayers
